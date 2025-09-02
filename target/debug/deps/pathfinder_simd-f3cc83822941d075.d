@@ -1,0 +1,9 @@
+/Users/apippert/Development/CDR/pachyterm/target/debug/deps/pathfinder_simd-f3cc83822941d075.d: /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/lib.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/extras.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/mod.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_f32x4.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_i32x4.rs
+
+/Users/apippert/Development/CDR/pachyterm/target/debug/deps/libpathfinder_simd-f3cc83822941d075.rmeta: /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/lib.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/extras.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/mod.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_f32x4.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_i32x4.rs
+
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/lib.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/extras.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/mod.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_f32x4.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_i32x4.rs:

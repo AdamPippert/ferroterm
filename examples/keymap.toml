@@ -1,0 +1,69 @@
+# Example keymap configuration for Ferroterm
+# This file demonstrates the advanced keybinding capabilities
+
+[keymap]
+# The prefix character for AI agent activation (only at line start)
+prefix = "f"
+escape_sequence = "\\f"
+
+# Key bindings - Custom mappings for various actions
+[keymap.bindings]
+
+# Terminal control
+"ctrl+c" = "interrupt"
+"ctrl+d" = "eof"
+"ctrl+z" = "suspend"
+"ctrl+l" = "clear"
+
+# Clipboard operations
+"ctrl+shift+c" = "copy"
+"ctrl+shift+v" = "paste"
+"ctrl+shift+x" = "cut"
+"ctrl+a" = "select_all"
+
+# Scrolling
+"shift+pageup" = "scroll_page_up"
+"shift+pagedown" = "scroll_page_down"
+"ctrl+shift+home" = "scroll_to_top"
+"ctrl+shift+end" = "scroll_to_bottom"
+
+# Emacs-style line editing (these work in shell mode)
+"ctrl+a" = "line_start"
+"ctrl+e" = "line_end"
+"ctrl+k" = "delete_to_end"
+"ctrl+u" = "delete_to_start"
+"ctrl+w" = "delete_word"
+"alt+b" = "word_back"
+"alt+f" = "word_forward"
+
+# History navigation
+"ctrl+p" = "history_prev"
+"ctrl+n" = "history_next"
+"ctrl+r" = "history_search"
+
+# Window management
+"ctrl+shift+t" = "new_window"
+"ctrl+shift+w" = "close_window"
+"ctrl+tab" = "next_window"
+"ctrl+shift+tab" = "prev_window"
+
+# Custom actions with parameters
+"f1" = "custom:help:keybindings"
+"f2" = "custom:toggle:theme"
+"ctrl+shift+d" = "custom:debug:input_stats"
+
+# Media keys (if available)
+"volumeup" = "custom:volume:up"
+"volumedown" = "custom:volume:down"
+"volumemute" = "custom:volume:mute"
+
+# Advanced combinations
+"ctrl+alt+l" = "clear_line"
+"super+k" = "delete_to_end"  # Cmd+K on macOS
+"super+left" = "line_start"  # Cmd+Left on macOS
+"super+right" = "line_end"   # Cmd+Right on macOS
+
+# Function key shortcuts
+"f5" = "custom:reload:config"
+"f12" = "custom:toggle:debug"
+"shift+f10" = "custom:context:menu"

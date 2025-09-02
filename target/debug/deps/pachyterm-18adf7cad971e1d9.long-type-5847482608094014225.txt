@@ -1,0 +1,2 @@
+hashbrown::raw::RawTable<(std::string::String, (SyntaxReference, HighlightState, syntect::parsing::ParseState))>
+hashbrown::map::HashMap<std::string::String, (SyntaxReference, HighlightState, syntect::parsing::ParseState), RandomState>
