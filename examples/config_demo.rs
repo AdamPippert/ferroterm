@@ -1,4 +1,4 @@
-use pachyterm::config::{Config, ConfigManager};
+use ferroterm::config::{Config, ConfigManager};
 use std::fs;
 use tempfile::TempDir;
 

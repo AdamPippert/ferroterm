@@ -111,13 +111,13 @@ impl Default for ModelsConfig {
         Self {
             models: vec![ModelConfig {
                 name: "mistral-7b-instruct".to_string(),
-                path: Some("~/.cache/pachyterm/models/mistral-7b-instruct.gguf".to_string()),
+                path: Some("~/.cache/ferroterm/models/mistral-7b-instruct.gguf".to_string()),
                 api_endpoint: None,
                 api_key: None,
                 quantization: "q4_0".to_string(),
                 context_window: 4096,
             }],
-            cache_dir: "~/.cache/pachyterm/models".to_string(),
+            cache_dir: "~/.cache/ferroterm/models".to_string(),
         }
     }
 }
@@ -134,7 +134,7 @@ impl Default for TelemetryConfig {
     fn default() -> Self {
         Self {
             enabled: false,
-            endpoint: "https://telemetry.pachyterm.dev".to_string(),
+            endpoint: "https://telemetry.ferroterm.dev".to_string(),
             batch_size: 100,
             flush_interval_ms: 60000,
         }
@@ -202,7 +202,7 @@ impl ConfigManager {
             dirs::config_dir().ok_or(ConfigError::DirectoryNotFound)?
         };
 
-        Ok(config_dir.join("pachyterm").join("pachyterm.toml"))
+        Ok(config_dir.join("ferroterm").join("ferroterm.toml"))
     }
 
     pub fn load_config_from_path(path: &Path) -> Result<Config, ConfigError> {
@@ -550,7 +550,7 @@ batch_size = {}
 flush_interval_ms = {}
 
 # Includes
-includes = ["~/.pachyterm/extra.toml"]
+includes = ["~/.ferroterm/extra.toml"]
 "#,
             config.ui.font_size,
             config.ui.font_family,
@@ -682,7 +682,7 @@ mod tests {
     #[test]
     fn test_missing_config_file() {
         let temp_dir = TempDir::new().unwrap();
-        let config_path = temp_dir.path().join("pachyterm.toml");
+        let config_path = temp_dir.path().join("ferroterm.toml");
 
         let config = ConfigManager::load_config_from_path(&config_path).unwrap();
         assert_eq!(config, Config::default());
@@ -692,7 +692,7 @@ mod tests {
     #[test]
     fn test_invalid_toml() {
         let temp_dir = TempDir::new().unwrap();
-        let config_path = temp_dir.path().join("pachyterm.toml");
+        let config_path = temp_dir.path().join("ferroterm.toml");
 
         fs::write(&config_path, "invalid toml [[[").unwrap();
 
@@ -703,7 +703,7 @@ mod tests {
     #[test]
     fn test_partial_config() {
         let temp_dir = TempDir::new().unwrap();
-        let config_path = temp_dir.path().join("pachyterm.toml");
+        let config_path = temp_dir.path().join("ferroterm.toml");
 
         let partial_config = r#"
 [ui]
@@ -727,7 +727,7 @@ temperature = 0.5
     #[test]
     fn test_config_reload() {
         let temp_dir = TempDir::new().unwrap();
-        let config_path = temp_dir.path().join("pachyterm.toml");
+        let config_path = temp_dir.path().join("ferroterm.toml");
 
         let initial_config = r#"
 [ui]
@@ -758,7 +758,7 @@ font_size = 16
     #[test]
     fn test_live_reload() {
         let temp_dir = TempDir::new().unwrap();
-        let config_path = temp_dir.path().join("pachyterm.toml");
+        let config_path = temp_dir.path().join("ferroterm.toml");
 
         let initial_config = r#"
 [ui]
@@ -795,7 +795,7 @@ font_size = 18
     #[test]
     fn test_performance_load_time() {
         let temp_dir = TempDir::new().unwrap();
-        let config_path = temp_dir.path().join("pachyterm.toml");
+        let config_path = temp_dir.path().join("ferroterm.toml");
 
         let large_config = format!(
             r#"

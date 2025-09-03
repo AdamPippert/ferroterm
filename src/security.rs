@@ -415,8 +415,8 @@ impl Default for SecurityConfig {
                 "/root".to_string(),
                 "/home".to_string(),
             ],
-            audit_log_path: PathBuf::from("~/.pachyterm/security/audit.log"),
-            key_store_path: PathBuf::from("~/.pachyterm/security/keys"),
+            audit_log_path: PathBuf::from("~/.ferroterm/security/audit.log"),
+            key_store_path: PathBuf::from("~/.ferroterm/security/keys"),
         }
     }
 }

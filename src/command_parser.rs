@@ -27,7 +27,9 @@ pub enum Command {
     // Traditional commands
     Help,
     Run(String),
+    Ask(String),
     Config(String, String),
+    Model(String),
     Clear,
     Exit,
     Custom(String, Vec<String>),
@@ -116,7 +118,7 @@ impl CommandParser {
         Self::register_builtin_commands(&mut commands);
 
         Self {
-            prefix,
+            prefix: prefix.clone(),
             escape_sequence: format!("\\{}", prefix),
             commands,
             state: ParseState::LineStart,

@@ -1,8 +1,8 @@
-use pachyterm::streaming_ui::{StreamingUI, StreamingConfig, StreamingEvent};
-use pachyterm::model_host::{ModelHost, InferenceRequest, InferenceParameters, LocalGGUFAdapter};
-use pachyterm::renderer::GpuRenderer;
-use pachyterm::input::{InputProcessor, InputAction, KeyEvent, Key, Modifier, KeymapConfig};
-use pachyterm::command_parser::CommandParser;
+use ferroterm::streaming_ui::{StreamingUI, StreamingConfig, StreamingEvent};
+use ferroterm::model_host::{ModelHost, InferenceRequest, InferenceParameters, LocalGGUFAdapter};
+use ferroterm::renderer::GpuRenderer;
+use ferroterm::input::{InputProcessor, InputAction, KeyEvent, Key, Modifier, KeymapConfig};
+use ferroterm::command_parser::CommandParser;
 use parking_lot::RwLock;
 use std::collections::HashSet;
 use std::sync::Arc;

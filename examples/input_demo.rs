@@ -1,6 +1,6 @@
-use pachyterm::config::{ConfigManager, KeymapConfig};
-use pachyterm::command_parser::CommandParser;
-use pachyterm::input::{InputProcessor, Key, Modifier, KeyEvent, InputAction, ShellMode, KeyBindingContext};
+use ferroterm::config::{ConfigManager, KeymapConfig};
+use ferroterm::command_parser::CommandParser;
+use ferroterm::input::{InputProcessor, Key, Modifier, KeyEvent, InputAction, ShellMode, KeyBindingContext};
 use parking_lot::RwLock;
 use std::collections::HashSet;
 use std::sync::Arc;

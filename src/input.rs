@@ -3,10 +3,9 @@ use crate::config::{ConfigManager, KeymapConfig};
 use parking_lot::{RwLock, Mutex};
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 use thiserror::Error;
 use tokio::sync::mpsc::{self, Receiver, Sender};
-use unicode_segmentation::UnicodeSegmentation;
 
 #[derive(Error, Debug)]
 pub enum InputError {
@@ -116,11 +115,31 @@ pub enum InputAction {
     DeleteToStart,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct KeyBinding {
     pub key: Key,
     pub modifiers: HashSet<Modifier>,
     pub context: KeyBindingContext,
+}
+
+impl std::hash::Hash for KeyBinding {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.key.hash(state);
+        // Sort modifiers for consistent hashing
+        let mut mods: Vec<_> = self.modifiers.iter().collect();
+        mods.sort_by_key(|m| match m {
+            Modifier::Ctrl => 0,
+            Modifier::Alt => 1,
+            Modifier::Shift => 2,
+            Modifier::Super => 3,
+            Modifier::Meta => 4,
+            Modifier::Hyper => 5,
+        });
+        for modifier in mods {
+            modifier.hash(state);
+        }
+        self.context.hash(state);
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -355,7 +374,7 @@ impl InputProcessor {
         })
     }
 
-    pub async fn process_key_event(&mut self, mut event: KeyEvent) -> Result<(), InputError> {
+    pub async fn process_key_event(&mut self, event: KeyEvent) -> Result<(), InputError> {
         let start_time = Instant::now();
         
         // Update statistics
@@ -553,7 +572,7 @@ impl InputProcessor {
                     };
                     
                     if !command.is_empty() {
-                        match self.command_parser.read().parse(&command) {
+                        match self.command_parser.write().parse(&command) {
                             Ok(parsed) => return Ok(Some(InputAction::ExecuteParsedCommand(parsed))),
                             Err(e) => {
                                 let error_msg = format!("Command error: {}\n", e);
@@ -620,7 +639,7 @@ impl InputProcessor {
 
         // Check cache first for O(1) performance
         {
-            let mut cache = self.key_lookup_cache.lock();
+            let cache = self.key_lookup_cache.lock();
             if let Some(cached_result) = cache.get(&binding) {
                 if cached_result.is_some() {
                     self.stats.lock().cache_hits += 1;

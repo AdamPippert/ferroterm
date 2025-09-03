@@ -1,4 +1,4 @@
-use pachyterm::tty::{PtyConfig, TerminalMode, TtyEngine};
+use ferroterm::tty::{PtyConfig, TerminalMode, TtyEngine};
 use std::time::Duration;
 use tokio::time::sleep;
 

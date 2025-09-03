@@ -1,4 +1,4 @@
-use pachyterm::tty::{PtyConfig, TtyEngine};
+use ferroterm::tty::{PtyConfig, TtyEngine};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::time::{sleep, Duration};

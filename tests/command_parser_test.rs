@@ -1,4 +1,4 @@
-use pachyterm::command_parser::*;
+use ferroterm::command_parser::*;
 
 #[test]
 fn test_o1_prefix_detection() {

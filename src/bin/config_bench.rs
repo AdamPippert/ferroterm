@@ -1,4 +1,4 @@
-use pachyterm::config::{Config, ConfigManager};
+use ferroterm::config::{Config, ConfigManager};
 use std::fs;
 use std::time::Instant;
 use tempfile::TempDir;
@@ -150,7 +150,7 @@ max_tokens = 2048
 temperature = 0.7
 
 [models]
-cache_dir = "~/.cache/pachyterm/models"
+cache_dir = "~/.cache/ferroterm/models"
 
 "#,
     );
@@ -161,7 +161,7 @@ cache_dir = "~/.cache/pachyterm/models"
             r#"
 [[models.models]]
 name = "model{}"
-path = "~/.cache/pachyterm/models/model{}.gguf"
+path = "~/.cache/ferroterm/models/model{}.gguf"
 quantization = "q4_0"
 context_window = 4096
 "#,
@@ -173,7 +173,7 @@ context_window = 4096
         r#"
 [telemetry]
 enabled = false
-endpoint = "https://telemetry.pachyterm.dev"
+endpoint = "https://telemetry.ferroterm.dev"
 batch_size = 100
 flush_interval_ms = 60000
 "#,

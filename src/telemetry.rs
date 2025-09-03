@@ -47,7 +47,7 @@ impl Default for TelemetryConfig {
             usage: false,
             db_path: dirs::home_dir()
                 .unwrap_or_else(|| PathBuf::from("."))
-                .join(".pachyterm")
+                .join(".ferroterm")
                 .join("telemetry.db"),
         }
     }

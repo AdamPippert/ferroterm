@@ -51,7 +51,7 @@ pub struct ContainerConfig {
 impl Default for ContainerConfig {
     fn default() -> Self {
         Self {
-            image: "quay.io/pachyterm/ramalama:latest".to_string(),
+            image: "quay.io/ferroterm/ramalama:latest".to_string(),
             command: vec!["/bin/bash".to_string()],
             env: HashMap::new(),
             working_dir: Some("/workspace".to_string()),
@@ -106,7 +106,7 @@ impl SessionConfig {
     pub fn new(session_id: String) -> Self {
         let log_directory = dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("/tmp"))
-            .join(".pachyterm")
+            .join(".ferroterm")
             .join("sessions")
             .join(&session_id);
 
@@ -285,7 +285,7 @@ impl OciLauncher {
     }
 
     async fn create_container(&self, session: &mut ContainerSession) -> Result<String, OciError> {
-        let container_id = format!("pachyterm-{}", session.id);
+        let container_id = format!("ferroterm-{}", session.id);
 
         // Build container creation arguments
         let mut args = vec![
@@ -648,7 +648,7 @@ impl OciLauncher {
             .args(&[
                 "ps",
                 "--filter",
-                "name=pachyterm-",
+                "name=ferroterm-",
                 "--format",
                 "{{.Names}}",
             ])
@@ -663,7 +663,7 @@ impl OciLauncher {
                 if !container_name.is_empty() {
                     // Check if we have a session for this container
                     let session_id = container_name
-                        .strip_prefix("pachyterm-")
+                        .strip_prefix("ferroterm-")
                         .unwrap_or(container_name);
 
                     let sessions = self.sessions.read().await;
@@ -733,7 +733,7 @@ mod tests {
     #[test]
     fn test_container_config_default() {
         let config = ContainerConfig::default();
-        assert_eq!(config.image, "quay.io/pachyterm/ramalama:latest");
+        assert_eq!(config.image, "quay.io/ferroterm/ramalama:latest");
         assert_eq!(config.command, vec!["/bin/bash"]);
         assert!(config.rootless);
     }

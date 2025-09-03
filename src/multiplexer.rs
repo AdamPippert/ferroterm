@@ -483,7 +483,7 @@ impl Default for MultiplexerConfig {
             max_panes_per_window: 16,
             max_windows_per_session: 10,
             default_layout: LayoutAlgorithm::Tiled,
-            session_directory: PathBuf::from("~/.pachyterm/sessions"),
+            session_directory: PathBuf::from("~/.ferroterm/sessions"),
             prefix_key: Key::Char('b'),
             prefix_modifier: Some(Modifier::Ctrl),
         }

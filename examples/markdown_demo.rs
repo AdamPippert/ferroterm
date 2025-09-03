@@ -1,5 +1,5 @@
-use pachyterm::markdown_renderer::{MarkdownTerminalRenderer, RenderContext};
-use pachyterm::renderer::TerminalGrid;
+use ferroterm::markdown_renderer::{MarkdownTerminalRenderer, RenderContext};
+use ferroterm::renderer::TerminalGrid;
 use std::io::{self, Write};
 use std::time::Instant;
 

@@ -1,20 +1,21 @@
-use pachyterm::{
+use ferroterm::{
     config::ConfigManager,
     input::{Key, KeyEvent},
     tty::{PtyConfig, TtyEngine},
 };
 
 use std::collections::HashSet;
-use std::sync::{Arc, RwLock, Mutex};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tracing::{debug, error, info, warn};
 use winit::{
-    application::ApplicationHandler,
-    event::{DeviceEvent, DeviceId, ElementState, Event, KeyEvent as WinitKeyEvent, WindowEvent},
+    event::{ElementState, KeyEvent as WinitKeyEvent, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     keyboard::{Key as WinitKey, NamedKey},
-    window::{Window, WindowBuilder, WindowId},
+    window::{Window, WindowBuilder},
 };
+
+
 
 // Application state
 struct FerrotermApp {
@@ -35,7 +36,7 @@ impl FerrotermApp {
 
         // 1. Initialize configuration system first
         info!("Initializing configuration system...");
-        let config_manager = Arc::new(ConfigManager::from_default()?);
+        let config_manager = Arc::new(ConfigManager::new()?);
 
         // 2. Initialize TTY Engine
         info!("Initializing TTY Engine...");
@@ -281,103 +282,7 @@ impl FerrotermApp {
     }
 }
 
-impl ApplicationHandler for FerrotermApp {
-    fn resumed(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
-        if self.window.is_none() {
-            let config = self.config_manager.get_config();
-            
-            // Calculate window size from terminal dimensions
-            let font_size = config.ui.font_size as f32;
-            let estimated_char_width = font_size * 0.6;
-            let estimated_char_height = font_size * 1.2 * config.ui.line_height;
-            
-            let window_width = (config.ui.window_width as f32 * estimated_char_width) as u32;
-            let window_height = (config.ui.window_height as f32 * estimated_char_height) as u32;
-            
-            let window_attributes = WindowBuilder::new()
-                .with_title("Ferroterm")
-                .with_inner_size(winit::dpi::LogicalSize::new(window_width, window_height))
-                .with_min_inner_size(winit::dpi::LogicalSize::new(400, 200));
 
-            match event_loop.create_window(window_attributes) {
-                Ok(window) => {
-                    let window = Arc::new(window);
-                    
-                    // Initialize graphics in async context
-                    let window_clone = window.clone();
-                    let app_ptr = self as *mut FerrotermApp;
-                    
-                    // SAFETY: We're in single-threaded event loop context
-                    tokio::spawn(async move {
-                        unsafe {
-                            if let Err(e) = (*app_ptr).initialize_graphics(window_clone).await {
-                                error!("Failed to initialize graphics: {}", e);
-                            }
-                        }
-                    });
-                }
-                Err(e) => {
-                    error!("Failed to create window: {}", e);
-                }
-            }
-        }
-    }
-
-    fn window_event(
-        &mut self,
-        event_loop: &winit::event_loop::ActiveEventLoop,
-        _window_id: WindowId,
-        event: WindowEvent,
-    ) {
-        match event {
-            WindowEvent::CloseRequested => {
-                info!("Close requested");
-                let app_ptr = self as *mut FerrotermApp;
-                tokio::spawn(async move {
-                    unsafe {
-                        (*app_ptr).shutdown().await;
-                    }
-                });
-                event_loop.exit();
-            }
-            WindowEvent::Resized(new_size) => {
-                debug!("Window resized to {:?}", new_size);
-                self.handle_window_resize(new_size);
-            }
-            WindowEvent::KeyboardInput { event, .. } => {
-                self.handle_key_input(event);
-            }
-            WindowEvent::RedrawRequested => {
-                self.render_frame();
-                self.handle_pty_output();
-                
-                // Request next frame for continuous rendering
-                if let Some(window) = &self.window {
-                    window.request_redraw();
-                }
-            }
-            _ => {}
-        }
-    }
-
-    fn device_event(
-        &mut self,
-        _event_loop: &winit::event_loop::ActiveEventLoop,
-        _device_id: DeviceId,
-        _event: DeviceEvent,
-    ) {
-        // Handle device events if needed
-    }
-
-    fn about_to_wait(&mut self, _event_loop: &winit::event_loop::ActiveEventLoop) {
-        // Handle periodic tasks
-        if self.is_initialized {
-            if let Some(window) = &self.window {
-                window.request_redraw();
-            }
-        }
-    }
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -388,16 +293,86 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Ferroterm v{} starting...", env!("CARGO_PKG_VERSION"));
 
+    // Create application
+    let mut app = FerrotermApp::new()?;
+
+    // Create window before event loop
+    let config = app.config_manager.get_config();
+
+    // Calculate window size from terminal dimensions
+    let font_size = config.ui.font_size as f32;
+    let estimated_char_width = font_size * 0.6;
+    let estimated_char_height = font_size * 1.2 * config.ui.line_height;
+
+    let window_width = (config.ui.window_width as f32 * estimated_char_width) as u32;
+    let window_height = (config.ui.window_height as f32 * estimated_char_height) as u32;
+
+    let window_attributes = WindowBuilder::new()
+        .with_title("Ferroterm")
+        .with_inner_size(winit::dpi::LogicalSize::new(window_width, window_height))
+        .with_min_inner_size(winit::dpi::LogicalSize::new(400, 200));
+
     // Create event loop
     let event_loop = EventLoop::new()?;
     event_loop.set_control_flow(ControlFlow::Poll);
 
-    // Create application
-    let mut app = FerrotermApp::new()?;
+    let window = Arc::new(window_attributes.build(&event_loop)?);
 
-    // Run event loop
+    // Store window reference in app
+    app.window = Some(window.clone());
+
+    // Initialize graphics synchronously for now
+    // TODO: Make initialize_graphics synchronous or handle async properly
+    info!("Graphics initialization skipped for now (async issues in event loop context)");
+
+    // Run event loop with closure-based event handling
     info!("Starting main event loop...");
-    event_loop.run_app(&mut app)?;
+    event_loop.run(move |event, event_loop| {
+        match event {
+            winit::event::Event::Resumed => {
+                // Window is already created
+            }
+            winit::event::Event::WindowEvent { event, .. } => {
+                match event {
+                    WindowEvent::CloseRequested => {
+                        info!("Close requested");
+                        // TODO: Handle shutdown properly in event loop context
+                        info!("Shutdown skipped for now (async issues in event loop context)");
+                        event_loop.exit();
+                    }
+                    WindowEvent::Resized(new_size) => {
+                        debug!("Window resized to {:?}", new_size);
+                        app.handle_window_resize(new_size);
+                    }
+                    WindowEvent::KeyboardInput { event, .. } => {
+                        app.handle_key_input(event);
+                    }
+                    WindowEvent::RedrawRequested => {
+                        app.render_frame();
+                        app.handle_pty_output();
+
+                        // Request next frame for continuous rendering
+                        if let Some(window) = &app.window {
+                            window.request_redraw();
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            winit::event::Event::DeviceEvent { .. } => {
+                // Handle device events if needed
+            }
+            winit::event::Event::AboutToWait => {
+                // Handle periodic tasks
+                if app.is_initialized {
+                    if let Some(window) = &app.window {
+                        window.request_redraw();
+                    }
+                }
+            }
+            _ => {}
+        }
+    })?;
 
     Ok(())
 }
