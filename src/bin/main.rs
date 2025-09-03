@@ -1,13 +1,21 @@
 use ferroterm::{
     config::ConfigManager,
     input::{Key, KeyEvent},
+    simple_renderer::SimpleRenderer,
+    terminal::TerminalState,
     tty::{PtyConfig, TtyEngine},
 };
 
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+use parking_lot::RwLock;
 use tracing::{debug, error, info, warn};
+
+#[cfg(target_os = "macos")]
+use objc::{msg_send, sel, sel_impl};
+#[cfg(target_os = "macos")]
+use objc::runtime::Object;
 use winit::{
     event::{ElementState, KeyEvent as WinitKeyEvent, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
@@ -22,6 +30,8 @@ struct FerrotermApp {
     window: Option<Arc<Window>>,
     tty_engine: Arc<TtyEngine>,
     config_manager: Arc<ConfigManager>,
+    terminal_state: Arc<RwLock<TerminalState>>,
+    renderer: Option<SimpleRenderer>,
     main_pty_id: Option<u64>,
     is_initialized: bool,
     startup_time: Instant,
@@ -34,18 +44,45 @@ impl FerrotermApp {
         let startup_time = Instant::now();
         info!("Starting Ferroterm terminal emulator...");
 
-        // 1. Initialize configuration system first
-        info!("Initializing configuration system...");
-        let config_manager = Arc::new(ConfigManager::new()?);
+        // 1. Initialize configuration system from platform config directory
+        info!("Loading configuration from platform config directory...");
+        let config_manager = match ConfigManager::new() {
+            Ok(manager) => {
+                let config = manager.get_config();
+                if let Ok(config_path) = ConfigManager::get_config_path() {
+                    info!("✓ Configuration loaded from: {}", config_path.display());
+                } else {
+                    info!("✓ Configuration loaded successfully");
+                }
+                info!("  Font: {} {}px", config.ui.font_family, config.ui.font_size);
+                info!("  Theme: {}", config.ui.theme);
+                info!("  Window: {}x{} characters", config.ui.window_width, config.ui.window_height);
+                Arc::new(manager)
+            }
+            Err(e) => {
+                warn!("Failed to load config, using defaults: {}", e);
+                if let Ok(config_path) = ConfigManager::get_config_path() {
+                    info!("To customize Ferroterm, create a config file at: {}", config_path.display());
+                }
+                info!("Using default configuration...");
+                Arc::new(ConfigManager::with_defaults())
+            }
+        };
 
         // 2. Initialize TTY Engine
         info!("Initializing TTY Engine...");
         let tty_engine = Arc::new(TtyEngine::new());
 
+        // 3. Initialize terminal state (default size, will be resized)
+        info!("Initializing terminal state...");
+        let terminal_state = Arc::new(RwLock::new(TerminalState::new(80, 24)));
+
         Ok(Self {
             window: None,
             tty_engine,
             config_manager,
+            terminal_state,
+            renderer: None,
             main_pty_id: None,
             is_initialized: false,
             startup_time,
@@ -70,10 +107,18 @@ impl FerrotermApp {
         
         info!("Terminal grid: {}x{} ({}x{} pixels)", term_cols, term_rows, window_size.width, window_size.height);
 
-        // 6. TODO: Initialize renderer later when modules are fixed
-        info!("Renderer initialization skipped (modules need fixing)");
+        // Update terminal state size
+        {
+            let mut terminal = self.terminal_state.write();
+            terminal.resize(term_cols, term_rows);
+        }
 
-        // 7. Create main PTY session
+        // Initialize renderer
+        info!("Initializing renderer...");
+        let renderer = SimpleRenderer::new(window.clone(), self.terminal_state.clone()).await?;
+        self.renderer = Some(renderer);
+
+        // Create main PTY session
         info!("Creating main PTY session...");
         let mut pty_config = PtyConfig::default();
         pty_config.rows = term_rows as u16;
@@ -114,6 +159,17 @@ impl FerrotermApp {
             
             debug!("Resizing terminal: {}x{}", term_cols, term_rows);
             
+            // Resize terminal state
+            {
+                let mut terminal = self.terminal_state.write();
+                terminal.resize(term_cols, term_rows);
+            }
+            
+            // Resize renderer
+            if let Some(ref mut renderer) = self.renderer {
+                renderer.resize(new_size);
+            }
+            
             // Resize PTY
             if let Err(e) = self.tty_engine.resize_pty(pty_id, term_rows as u16, term_cols as u16) {
                 error!("Failed to resize PTY: {}", e);
@@ -124,6 +180,17 @@ impl FerrotermApp {
     fn handle_key_input(&mut self, key_event: WinitKeyEvent) {
         if !self.is_initialized {
             return;
+        }
+
+        // Check for About panel shortcut (Cmd+A on macOS)
+        #[cfg(target_os = "macos")]
+        {
+            if key_event.state == ElementState::Pressed
+                && key_event.logical_key == WinitKey::Character("a".into())
+                && key_event.modifiers().super_key() {
+                show_about_panel();
+                return;
+            }
         }
 
         // Convert winit key event to our internal format
@@ -228,7 +295,12 @@ impl FerrotermApp {
     }
 
     fn render_frame(&mut self) {
-        // TODO: Implement rendering when renderer modules are fixed
+        if let Some(ref mut renderer) = self.renderer {
+            if let Err(e) = renderer.render() {
+                error!("Render error: {}", e);
+            }
+        }
+        
         self.frame_count += 1;
         
         // Calculate FPS every second
@@ -243,29 +315,7 @@ impl FerrotermApp {
         }
     }
 
-    fn handle_pty_output(&mut self) {
-        if let Some(pty_id) = self.main_pty_id {
-            let tty_engine = self.tty_engine.clone();
-            tokio::spawn(async move {
-                let mut buffer = [0u8; 4096];
-                match tty_engine.read_from_pty(pty_id, &mut buffer).await {
-                    Ok(bytes_read) if bytes_read > 0 => {
-                        let output = &buffer[..bytes_read];
-                        // TODO: Process terminal escape sequences and update renderer grid
-                        debug!("PTY output: {} bytes", bytes_read);
-                        // For now, just print to stdout as a basic fallback
-                        print!("{}", String::from_utf8_lossy(output));
-                    }
-                    Ok(_) => {
-                        // No data available
-                    }
-                    Err(e) => {
-                        error!("Failed to read from PTY: {}", e);
-                    }
-                }
-            });
-        }
-    }
+
 
     async fn shutdown(&mut self) {
         info!("Shutting down Ferroterm...");
@@ -282,6 +332,21 @@ impl FerrotermApp {
     }
 }
 
+#[cfg(target_os = "macos")]
+fn show_about_panel() {
+    unsafe {
+        // Get the NSApplication shared instance
+        let ns_app: *mut Object = msg_send![objc::runtime::Class::get("NSApplication").unwrap(), sharedApplication];
+
+        // Show the standard About panel
+        let _: () = msg_send![ns_app, orderFrontStandardAboutPanel: std::ptr::null::<Object>()];
+    }
+}
+
+#[cfg(not(target_os = "macos"))]
+fn show_about_panel() {
+    // No-op on non-macOS platforms
+}
 
 
 #[tokio::main]
@@ -308,7 +373,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let window_height = (config.ui.window_height as f32 * estimated_char_height) as u32;
 
     let window_attributes = WindowBuilder::new()
-        .with_title("Ferroterm")
+        .with_title(format!("Ferroterm v{}", env!("CARGO_PKG_VERSION")))
         .with_inner_size(winit::dpi::LogicalSize::new(window_width, window_height))
         .with_min_inner_size(winit::dpi::LogicalSize::new(400, 200));
 
@@ -321,9 +386,73 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Store window reference in app
     app.window = Some(window.clone());
 
-    // Initialize graphics synchronously for now
-    // TODO: Make initialize_graphics synchronous or handle async properly
-    info!("Graphics initialization skipped for now (async issues in event loop context)");
+    // Initialize graphics and PTY before starting event loop
+    info!("Initializing graphics and creating main PTY session...");
+    
+    // Calculate terminal dimensions
+    let window_size = window.inner_size();
+    let term_cols = (window_size.width as f32 / estimated_char_width) as u32;
+    let term_rows = (window_size.height as f32 / estimated_char_height) as u32;
+    
+    info!("Terminal grid: {}x{} ({}x{} pixels)", term_cols, term_rows, window_size.width, window_size.height);
+
+    // Create main PTY session
+    let mut pty_config = PtyConfig::default();
+    pty_config.rows = term_rows as u16;
+    pty_config.cols = term_cols as u16;
+    
+    if let Ok(shell) = std::env::var("SHELL") {
+        pty_config.shell = shell;
+    }
+    
+    app.main_pty_id = Some(app.tty_engine.create_pty(pty_config).await?);
+    app.is_initialized = true;
+    
+    // Start continuous PTY output reader
+    if let Some(pty_id) = app.main_pty_id {
+        let tty_engine_clone = app.tty_engine.clone();
+        let terminal_state_clone = app.terminal_state.clone();
+        tokio::spawn(async move {
+            info!("Starting continuous PTY output reader for PTY {}", pty_id);
+            loop {
+                let mut buffer = [0u8; 4096];
+                match tty_engine_clone.read_from_pty(pty_id, &mut buffer).await {
+                    Ok(bytes_read) if bytes_read > 0 => {
+                        let output = &buffer[..bytes_read];
+                        
+                        // Feed data to terminal state for parsing and rendering
+                        {
+                            let mut terminal = terminal_state_clone.write();
+                            terminal.feed_bytes(output);
+                        }
+                        
+                        // Also print to console for debugging (remove this later)
+                        let output_str = String::from_utf8_lossy(output);
+                        debug!("PTY output: {} bytes: {}", bytes_read, output_str.trim());
+                    }
+                    Ok(_) => {
+                        // No data available, wait longer to reduce CPU usage
+                        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+                    }
+                    Err(e) => {
+                        // Only log non-timeout errors to reduce noise
+                        if !e.to_string().contains("Timeout") {
+                            error!("PTY read error: {}", e);
+                            break;
+                        }
+                        // For timeout errors, just wait a bit shorter
+                        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+                    }
+                }
+            }
+        });
+        
+        // Give the shell a moment to start and output its prompt
+        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    }
+    
+    let elapsed = app.startup_time.elapsed();
+    info!("Ferroterm initialized successfully in {:?}", elapsed);
 
     // Run event loop with closure-based event handling
     info!("Starting main event loop...");
@@ -349,7 +478,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     WindowEvent::RedrawRequested => {
                         app.render_frame();
-                        app.handle_pty_output();
 
                         // Request next frame for continuous rendering
                         if let Some(window) = &app.window {
