@@ -13,7 +13,7 @@ Ferroterm addresses the gap in the terminal ecosystem where power users want ult
 - **GPU Acceleration**: wgpu-powered rendering with 144 FPS target
 - **POSIX Compliant**: 100% compatibility with all shells and TUI applications
 - **Local-First AI**: Support for local GGUF/MLC/vLLM models with remote fallback
-- **Plain-Text Configuration**: Everything configurable via `pachyterm.toml`
+- **Plain-Text Configuration**: Everything configurable via `ferroterm.toml`
 - **Cross-Platform**: Native support for macOS and Linux
 
 ## Architecture
@@ -67,7 +67,7 @@ cargo run --example tty_demo
 
 ### Configuration
 
-Ferroterm creates a default configuration at `~/.config/pachyterm/pachyterm.toml`:
+Ferroterm creates a default configuration at `~/.config/ferroterm/ferroterm.toml`:
 
 ```toml
 [ui]
@@ -83,11 +83,11 @@ default_model = "mistral-7b-instruct"
 temperature = 0.7
 
 [models]
-cache_dir = "~/.cache/pachyterm/models"
+cache_dir = "~/.cache/ferroterm/models"
 
 [[models.models]]
 name = "mistral-7b-instruct"
-path = "~/.cache/pachyterm/models/mistral-7b-instruct.gguf"
+path = "~/.cache/ferroterm/models/mistral-7b-instruct.gguf"
 quantization = "q4_0"
 ```
 

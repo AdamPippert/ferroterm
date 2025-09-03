@@ -1,0 +1,402 @@
+{
+  "id": "ferroterm-terminal-emulator",
+  "description": "GPU-accelerated terminal emulator with integrated AI agent - reordered for dependency resolution",
+  "type": "epic",
+  "status": "inprogress",
+  "priority": 1,
+  "assigned_agent_type": "development_team",
+  "creation_timestamp": "2025-01-11T12:00:00Z",
+  "artifacts": {
+    "repository": "https://github.com/CoastalDigitalResearch/Ferroterm",
+    "prd_specs": "specs/",
+    "priority_mapping": "specs/priority-mapping.md",
+    "dependency_analysis": "specs/dependency-analysis.md"
+  },
+  "children": [
+    {
+      "id": "T001",
+      "description": "TTY Engine - Foundational component responsible for spawning and managing pseudo-terminals (PTYs), handling I/O relay, signal management, and supporting various terminal modes",
+      "type": "story",
+      "status": "completed",
+      "priority": 1,
+      "assigned_agent_type": "lead_rust_engineer",
+      "creation_timestamp": "2025-01-01T00:00:00Z",
+      "completion_timestamp": "2025-01-05T23:59:59Z",
+      "dependencies": [],
+      "artifacts": {
+        "prd": "specs/core-runtime/tty-engine-prd.md",
+        "implementation": "src/tty.rs",
+        "tests": "src/tty.rs#tests",
+        "example": "examples/tty_demo.rs"
+      }
+    },
+    {
+      "id": "T002",
+      "description": "Plain-Text Config - TOML-based configuration system with live reload, schema validation, and comment preservation",
+      "type": "story",
+      "status": "completed",
+      "priority": 1,
+      "assigned_agent_type": "dev_tools_engineer",
+      "creation_timestamp": "2025-01-01T00:00:00Z",
+      "completion_timestamp": "2025-01-03T23:59:59Z",
+      "dependencies": [],
+      "artifacts": {
+        "prd": "specs/config-state/plain-text-config-prd.md",
+        "implementation": "src/config.rs",
+        "tests": "src/config.rs#tests",
+        "benchmarks": "benches/config_bench.rs",
+        "example": "examples/config_demo.rs"
+      }
+    },
+    {
+      "id": "T003",
+      "description": "GPU Renderer - GPU-accelerated text rendering using wgpu with support for ligatures, emoji fallback, and true-color display",
+      "type": "story",
+      "status": "todo",
+      "priority": 1,
+      "assigned_agent_type": "lead_rust_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T001"],
+      "artifacts": {
+        "prd": "specs/core-runtime/renderer-prd.md",
+        "target_file": "src/renderer.rs"
+      }
+    },
+    {
+      "id": "T004",
+      "description": "Input/Keymap System (Basic) - Basic keyboard input handling and configurable keybindings without agent integration",
+      "type": "story",
+      "status": "todo",
+      "priority": 2,
+      "assigned_agent_type": "core_runtime_team",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T001", "T002"],
+      "artifacts": {
+        "prd": "specs/core-runtime/input-keymap-prd.md",
+        "target_file": "src/input.rs"
+      }
+    },
+    {
+      "id": "T005",
+      "description": "Dual Render Back-Ends - Dual rendering system with GPU-accelerated Vulkan backend and ANSI fallback for remote/SSH scenarios",
+      "type": "story",
+      "status": "todo",
+      "priority": 1,
+      "assigned_agent_type": "lead_rust_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T001", "T002", "T004"],
+      "artifacts": {
+        "prd": "specs/P0-001_dual_render_back_ends.md",
+        "target_file": "src/dual_renderer.rs"
+      }
+    },
+    {
+      "id": "T006",
+      "description": "Command Prefix Parser (Basic) - Basic agent command detection and parsing without full integration",
+      "type": "story",
+      "status": "todo",
+      "priority": 2,
+      "assigned_agent_type": "ai_infrastructure_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T004", "T002"],
+      "artifacts": {
+        "prd": "specs/agent-subsystem/command-parser-prd.md",
+        "target_file": "src/command_parser.rs"
+      }
+    },
+    {
+      "id": "T007",
+      "description": "Input/Keymap System (Complete) - Complete input system integration with agent command parsing",
+      "type": "story",
+      "status": "todo",
+      "priority": 2,
+      "assigned_agent_type": "core_runtime_team",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T004", "T006"],
+      "artifacts": {
+        "prd": "specs/core-runtime/input-keymap-prd.md",
+        "target_file": "src/input.rs"
+      }
+    },
+    {
+      "id": "T008",
+      "description": "Profile Cache (Stub Interface) - Initial profile cache interface without model host integration",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "ai_infrastructure_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T002"],
+      "artifacts": {
+        "prd": "specs/config-state/profile-cache-prd.md",
+        "target_file": "src/profile_cache.rs"
+      }
+    },
+    {
+      "id": "T009",
+      "description": "Model Host - AI model hosting system supporting local GGUF models and remote API endpoints",
+      "type": "story",
+      "status": "todo",
+      "priority": 1,
+      "assigned_agent_type": "ai_infrastructure_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T006", "T002", "T008"],
+      "artifacts": {
+        "prd": "specs/agent-subsystem/model-host-prd.md",
+        "target_file": "src/model_host.rs"
+      }
+    },
+    {
+      "id": "T010",
+      "description": "Streaming UI - Real-time streaming UI for AI responses with markdown support and interruption handling",
+      "type": "story",
+      "status": "todo",
+      "priority": 2,
+      "assigned_agent_type": "frontend_developer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T009", "T003", "T007"],
+      "artifacts": {
+        "prd": "specs/agent-subsystem/streaming-ui-prd.md",
+        "target_file": "src/streaming_ui.rs"
+      }
+    },
+    {
+      "id": "T011",
+      "description": "Profile Cache (Complete Integration) - Full profile cache integration with model host",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "ai_infrastructure_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T008", "T009"],
+      "artifacts": {
+        "prd": "specs/config-state/profile-cache-prd.md",
+        "target_file": "src/profile_cache.rs"
+      }
+    },
+    {
+      "id": "T012",
+      "description": "tmux-Compatible Multiplexer - Native terminal multiplexing with tmux key binding parity",
+      "type": "story",
+      "status": "todo",
+      "priority": 2,
+      "assigned_agent_type": "core_runtime_team",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T001", "T003", "T007", "T002"],
+      "artifacts": {
+        "prd": "specs/P0-002_tmux_compatible_multiplexer.md",
+        "target_file": "src/multiplexer.rs"
+      }
+    },
+    {
+      "id": "T013",
+      "description": "Privacy & Telemetry Controls - Privacy-first telemetry system with granular opt-in controls",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "security_team",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T002"],
+      "artifacts": {
+        "prd": "specs/P0-006_privacy_and_telemetry.md",
+        "target_file": "src/telemetry.rs"
+      }
+    },
+    {
+      "id": "T014",
+      "description": "Minimal Config & Auto-Theme - Intelligent configuration defaults and automatic theme detection",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "ui_designer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T002"],
+      "artifacts": {
+        "prd": "specs/P0-007_minimal_config_and_auto_theme.md",
+        "target_file": "src/themes.rs"
+      }
+    },
+    {
+      "id": "T015",
+      "description": "OS-Awareness Agent - System context gathering for environment-specific AI responses",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "ai_infrastructure_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T009", "T006"],
+      "artifacts": {
+        "prd": "specs/P0-005_os_awareness_agent.md",
+        "target_file": "src/os_agent.rs"
+      }
+    },
+    {
+      "id": "T016",
+      "description": "OCI Session Launcher (Stub Memory) - Container-based session isolation without shared memory integration",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "devops_automator",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T001", "T009", "T002"],
+      "artifacts": {
+        "prd": "specs/P0-003_oci_crun_session_launcher.md",
+        "target_file": "src/oci_launcher.rs"
+      }
+    },
+    {
+      "id": "T017",
+      "description": "Shared Memory Buffers API - Zero-copy data sharing between terminal host and containerized agents",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "backend_architect",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T001", "T016", "T006", "T009"],
+      "artifacts": {
+        "prd": "specs/P0-004_shared_memory_buffers_api.md",
+        "target_file": "src/shared_memory.rs"
+      }
+    },
+    {
+      "id": "T018",
+      "description": "OCI Session Launcher (Complete Integration) - Full OCI integration with shared memory buffers",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "devops_automator",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T016", "T017"],
+      "artifacts": {
+        "prd": "specs/P0-003_oci_crun_session_launcher.md",
+        "target_file": "src/oci_launcher.rs"
+      }
+    },
+    {
+      "id": "T019",
+      "description": "Image/Media Display - Inline image and media display with protocol support for Sixel and iTerm",
+      "type": "story",
+      "status": "todo",
+      "priority": 4,
+      "assigned_agent_type": "frontend_developer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T003", "T017"],
+      "artifacts": {
+        "prd": "specs/P1-008_image_media_display.md",
+        "target_file": "src/media_display.rs"
+      }
+    },
+    {
+      "id": "T020",
+      "description": "Model Hot-Swap VRAM Arbitration - Dynamic VRAM management and model hot-swapping capabilities",
+      "type": "story",
+      "status": "todo",
+      "priority": 4,
+      "assigned_agent_type": "ai_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T009", "T016"],
+      "artifacts": {
+        "prd": "specs/P1-009_model_hot_swap_vram_arbitration.md",
+        "target_file": "src/vram_arbitration.rs"
+      }
+    },
+    {
+      "id": "T021",
+      "description": "Plugin SDK - Rust/WASM plugin system for extending terminal functionality",
+      "type": "story",
+      "status": "todo",
+      "priority": 4,
+      "assigned_agent_type": "backend_architect",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T001", "T002", "T006"],
+      "artifacts": {
+        "prd": "specs/extensibility/plugin-sdk-prd.md",
+        "target_file": "src/plugin_sdk.rs"
+      }
+    },
+    {
+      "id": "T022",
+      "description": "Extensible Agent API - API system for extending AI agent capabilities through plugins",
+      "type": "story",
+      "status": "todo",
+      "priority": 4,
+      "assigned_agent_type": "ai_engineer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T009", "T021"],
+      "artifacts": {
+        "prd": "specs/P1-010_extensible_agent_api.md",
+        "target_file": "src/agent_api.rs"
+      }
+    },
+    {
+      "id": "T023",
+      "description": "macOS Metal Backend - Native Metal rendering backend for macOS optimization",
+      "type": "story",
+      "status": "todo",
+      "priority": 4,
+      "assigned_agent_type": "mobile_app_builder",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T003"],
+      "artifacts": {
+        "prd": "specs/P2-011_macos_metal_backend.md",
+        "target_file": "src/metal_backend.rs"
+      }
+    },
+    {
+      "id": "T024",
+      "description": "Enhanced Font/Ligature System - Advanced typography with comprehensive ligature and font variant support",
+      "type": "story",
+      "status": "todo",
+      "priority": 4,
+      "assigned_agent_type": "ui_designer",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T003"],
+      "artifacts": {
+        "prd": "specs/P2-012_enhanced_font_ligature_system.md",
+        "target_file": "src/font_system.rs"
+      }
+    },
+    {
+      "id": "T025",
+      "description": "Installer - Cross-platform installation packages and distribution channels",
+      "type": "story",
+      "status": "todo",
+      "priority": 3,
+      "assigned_agent_type": "devops_automator",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": [],
+      "artifacts": {
+        "prd": "specs/distribution-operations/installer-prd.md",
+        "target_file": "scripts/install.sh"
+      }
+    },
+    {
+      "id": "T026",
+      "description": "Security Hardening - Comprehensive security measures including sandboxing and signed releases",
+      "type": "story",
+      "status": "todo",
+      "priority": 1,
+      "assigned_agent_type": "security_team",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T009", "T021"],
+      "artifacts": {
+        "prd": "specs/distribution-operations/security-prd.md",
+        "target_file": "src/security.rs"
+      }
+    },
+    {
+      "id": "T027",
+      "description": "Telemetry Infrastructure - Production telemetry system with privacy controls and analytics",
+      "type": "story",
+      "status": "todo",
+      "priority": 4,
+      "assigned_agent_type": "analytics_reporter",
+      "creation_timestamp": "2025-01-11T12:00:00Z",
+      "dependencies": ["T002", "T013"],
+      "artifacts": {
+        "prd": "specs/distribution-operations/telemetry-prd.md",
+        "target_file": "src/telemetry.rs"
+      }
+    }
+  ]
+}

@@ -18,7 +18,7 @@ Zero config to start (Ghostty style) but optional TOML with live reload.
 ## Features
 * Reload on `SIGUSR1` or `:config-reload`.
 * Hard-coded system light/dark themes.
-* `include = ["~/.pachyterm/extra.toml"]`.
+* `include = ["~/.ferroterm/extra.toml"]`.
 
 ## Success Metrics
 * 90 % dog-fooders use defaults for 1 week with zero complaints.

@@ -6,8 +6,8 @@ Ferroterm — Product Requirements Document (PRD)
 	•	Success Criteria.
 	1.	Time‑to‑first‑frame ≤ 50 ms on M‑series and modern x86 laptops.
 	2.	Agent response latency (local 7‑B model, 4‑bit quantized) ≤ 300 ms for 32‑token prompt.
-	3.	Conformance to POSIX PTY semantics; all common shells and TUI apps behave identically inside pachyterm.
-	4.	100 % of config in plain‑text (pachyterm.toml)—no GUI needed for full power.
+	3.	Conformance to POSIX PTY semantics; all common shells and TUI apps behave identically inside ferroterm.
+	4.	100 % of config in plain‑text (ferroterm.toml)—no GUI needed for full power.
 
 ⸻
 
@@ -20,10 +20,10 @@ Core Runtime	Rust TTY Engine (async‑pty)	Spawn & manage PTYs; relay I/O; handl
 Agent Subsystem	Command Prefix Parser	Detect p / p --model <id>; collect rest of line as prompt; pass stdin snapshot & scrollback (configurable) as context.	O(1) prefix dispatch; no perceptible delay in regular shell commands.
 	Model Host	Load local GGUF / MLC / vLLM models; fallback to remote endpoints (OpenAI, Gemini) via per‑model adapter.	Warm pool of N workers; cold‑start ≤ 150 ms; memory isolation.
 	Streaming UI	Inline assistant output with ANSI dim color; supports markdown → plaintext render; abort on Ctrl‑C.	Sub‑frame latency between token receive and paint.
-Config & State	Plain‑Text Config (~/.config/pachyterm/pachyterm.toml)	Sections: [ui], [keymap], [agent], [models], [telemetry].	Live‑reload; schema‑versioned; comments preserved.
+Config & State	Plain‑Text Config (~/.config/ferroterm/ferroterm.toml)	Sections: [ui], [keymap], [agent], [models], [telemetry].	Live‑reload; schema‑versioned; comments preserved.
 	Profile Cache	Per‑model prompt templates, temperature, top‑p, system messages.	LRU; disk‑backed; encrypted if crypto = true.
 Extensibility	Plugin SDK	Rust cdylib/Wasm plugins can register new prefix commands, custom panes.	Sandbox via WASI; plugin crash isolation.
-Distribution	Installer	Homebrew (brew install pachyterm), Cargo (cargo install), .deb/.rpm.	Binary < 20 MB compressed; no runtime deps beyond libc, GPU drivers.
+Distribution	Installer	Homebrew (brew install ferroterm), Cargo (cargo install), .deb/.rpm.	Binary < 20 MB compressed; no runtime deps beyond libc, GPU drivers.
 Telemetry (Opt‑In)	Minimal anonymized stats; error backtraces.	GDPR compliant; CLI flag --no‑telemetry.	
 Security	Signed releases; supply‑chain SBOM; seccomp sandbox around model host.	Reproducible builds CI (GitHub Actions + Nix).	
 

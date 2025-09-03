@@ -17,7 +17,7 @@ The Plain-Text Configuration system provides a human-readable, version-controlla
 - **FR-1.5**: Configuration migration between versions
 
 ### 2. Configuration Management
-- **FR-2.1**: Load from ~/.config/pachyterm/pachyterm.toml
+- **FR-2.1**: Load from ~/.config/ferroterm/ferroterm.toml
 - **FR-2.2**: Support XDG_CONFIG_HOME environment variable
 - **FR-2.3**: Merge user config with defaults
 - **FR-2.4**: Validate configuration against schema

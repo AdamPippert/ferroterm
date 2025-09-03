@@ -30,7 +30,7 @@ The OCI Session Launcher isolates each terminal pane in a rootless OCI container
 - **FR-3.4**: Support concurrent model access
 
 ### 4. Session Management
-- **FR-4.1**: Store logs and crash dumps under ~/.pachyterm/sessions/<id>
+- **FR-4.1**: Store logs and crash dumps under ~/.ferroterm/sessions/<id>
 - **FR-4.2**: Maintain session metadata and state
 - **FR-4.3**: Support session enumeration and cleanup
 - **FR-4.4**: Handle graceful session termination

@@ -274,7 +274,7 @@ impl SharedMemoryBuffer {
 
     fn create_shared_memory_file(id: &str, size: u64) -> Result<File, SharedMemoryError> {
         // Try /dev/shm first
-        let shm_path = PathBuf::from("/dev/shm").join(format!("pachyterm-{}", id));
+        let shm_path = PathBuf::from("/dev/shm").join(format!("ferroterm-{}", id));
 
         match OpenOptions::new()
             .read(true)
@@ -298,7 +298,7 @@ impl SharedMemoryBuffer {
         #[cfg(target_os = "linux")]
         {
             // Use memfd_create syscall on Linux
-            let name = std::ffi::CString::new(format!("pachyterm-{}", id)).unwrap();
+            let name = std::ffi::CString::new(format!("ferroterm-{}", id)).unwrap();
 
             let fd = unsafe { libc::memfd_create(name.as_ptr(), libc::MFD_CLOEXEC) };
 
@@ -341,7 +341,7 @@ impl SharedMemoryBuffer {
         #[cfg(target_os = "linux")]
         {
             // Try /dev/shm first
-            let shm_path = PathBuf::from("/dev/shm").join(format!("pachyterm-{}", id));
+            let shm_path = PathBuf::from("/dev/shm").join(format!("ferroterm-{}", id));
 
             match OpenOptions::new().read(true).write(true).open(&shm_path) {
                 Ok(file) => Ok(file),
@@ -602,7 +602,7 @@ impl Drop for SharedMemoryBuffer {
         }
 
         // Clean up shared memory file if it exists
-        let shm_path = PathBuf::from("/dev/shm").join(format!("pachyterm-{}", self.id));
+        let shm_path = PathBuf::from("/dev/shm").join(format!("ferroterm-{}", self.id));
         if shm_path.exists() {
             let _ = std::fs::remove_file(shm_path);
         }
