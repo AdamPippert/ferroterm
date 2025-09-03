@@ -56,13 +56,24 @@ Ferroterm is built with a modular architecture consisting of:
 
 ```bash
 # From source
-git clone https://github.com/CoastalDigitalResearch/Ferroterm.git
+git clone https://github.com/AdamPippert/Ferroterm.git
 cd Ferroterm
 cargo build --release
 
+# Add to PATH (choose one option)
+# Option 1: Copy to system PATH
+sudo cp target/release/ferroterm /usr/local/bin/
+
+# Option 2: Add to your shell profile (recommended for development)
+echo 'export PATH="$PATH:'$(pwd)'/target/release"' >> ~/.bashrc  # For bash
+echo 'export PATH="$PATH:'$(pwd)'/target/release"' >> ~/.zshrc   # For zsh
+source ~/.bashrc  # or source ~/.zshrc
+
+# Verify installation
+ferroterm --version
+
 # Run examples
-cargo run --example config_demo
-cargo run --example tty_demo
+cargo run --example markdown_demo
 ```
 
 ### Configuration
@@ -175,4 +186,4 @@ Ferroterm is built with security, performance, and reliability as top priorities
 
 ## Support
 
-For questions, issues, or contributions, please visit our [GitHub repository](https://github.com/CoastalDigitalResearch/Ferroterm).
+For questions, issues, or contributions, please visit our [GitHub repository](https://github.com/AdamPippert/Ferroterm).
