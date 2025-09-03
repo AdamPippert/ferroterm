@@ -1,3 +1,7 @@
+#![allow(unexpected_cfgs, dead_code)]
+
+use clap::Parser;
+
 use ferroterm::{
     config::ConfigManager,
     input::{Key, KeyEvent},
@@ -17,11 +21,24 @@ use objc::{msg_send, sel, sel_impl};
 #[cfg(target_os = "macos")]
 use objc::runtime::Object;
 use winit::{
-    event::{ElementState, KeyEvent as WinitKeyEvent, WindowEvent},
+    event::{ElementState, KeyEvent as WinitKeyEvent, Modifiers, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     keyboard::{Key as WinitKey, NamedKey},
     window::{Window, WindowBuilder},
 };
+
+#[derive(Parser)]
+#[command(name = "ferroterm")]
+#[command(about = "A modern terminal emulator")]
+struct Args {
+    /// Command to run on startup
+    #[arg(short, long)]
+    command: Option<String>,
+
+    /// Arguments for the command
+    #[arg(last = true)]
+    command_args: Vec<String>,
+}
 
 
 
@@ -37,10 +54,12 @@ struct FerrotermApp {
     startup_time: Instant,
     frame_count: u64,
     last_fps_time: Instant,
+    modifiers: Modifiers,
+    startup_command: Option<String>,
 }
 
 impl FerrotermApp {
-    fn new() -> Result<Self, Box<dyn std::error::Error>> {
+    fn new(startup_command: Option<String>) -> Result<Self, Box<dyn std::error::Error>> {
         let startup_time = Instant::now();
         info!("Starting Ferroterm terminal emulator...");
 
@@ -65,7 +84,7 @@ impl FerrotermApp {
                     info!("To customize Ferroterm, create a config file at: {}", config_path.display());
                 }
                 info!("Using default configuration...");
-                Arc::new(ConfigManager::with_defaults())
+                Arc::new(ConfigManager::new().expect("Failed to create default config"))
             }
         };
 
@@ -88,6 +107,8 @@ impl FerrotermApp {
             startup_time,
             frame_count: 0,
             last_fps_time: startup_time,
+            modifiers: Modifiers::default(),
+            startup_command,
         })
     }
 
@@ -136,12 +157,23 @@ impl FerrotermApp {
 
         let elapsed = self.startup_time.elapsed();
         info!("Ferroterm initialized successfully in {:?}", elapsed);
-        
+
         // Check if we met the startup time target
         if elapsed <= Duration::from_millis(100) {
             info!("✓ Met startup time target (≤100ms)");
         } else {
             warn!("⚠ Startup time exceeded target: {:?} > 100ms", elapsed);
+        }
+
+        // Execute startup command if provided
+        if let Some(ref cmd) = self.startup_command {
+            if let Some(pty_id) = self.main_pty_id {
+                info!("Executing startup command: {}", cmd);
+                let cmd_with_newline = format!("{}\n", cmd);
+                if let Err(e) = self.tty_engine.write_to_pty(pty_id, cmd_with_newline.as_bytes()).await {
+                    warn!("Failed to execute startup command: {}", e);
+                }
+            }
         }
 
         Ok(())
@@ -177,7 +209,7 @@ impl FerrotermApp {
         }
     }
 
-    fn handle_key_input(&mut self, key_event: WinitKeyEvent) {
+    fn handle_key_input(&mut self, key_event: WinitKeyEvent, _modifiers: Modifiers) {
         if !self.is_initialized {
             return;
         }
@@ -186,8 +218,8 @@ impl FerrotermApp {
         #[cfg(target_os = "macos")]
         {
             if key_event.state == ElementState::Pressed
-                && key_event.logical_key == WinitKey::Character("a".into())
-                && key_event.modifiers().super_key() {
+                && key_event.logical_key == WinitKey::Character("a".into()) {
+                // TODO: Check for Cmd modifier
                 show_about_panel();
                 return;
             }
@@ -351,6 +383,25 @@ fn show_about_panel() {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Parse command line arguments
+    let args = Args::parse();
+
+    // Construct startup command if provided
+    let startup_command = if let Some(cmd) = args.command {
+        if args.command_args.is_empty() {
+            Some(cmd)
+        } else {
+            let mut full_cmd = cmd;
+            for arg in args.command_args {
+                full_cmd.push(' ');
+                full_cmd.push_str(&arg);
+            }
+            Some(full_cmd)
+        }
+    } else {
+        None
+    };
+
     // Initialize logging
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
@@ -359,7 +410,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("Ferroterm v{} starting...", env!("CARGO_PKG_VERSION"));
 
     // Create application
-    let mut app = FerrotermApp::new()?;
+    let mut app = FerrotermApp::new(startup_command)?;
 
     // Create window before event loop
     let config = app.config_manager.get_config();
@@ -474,7 +525,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         app.handle_window_resize(new_size);
                     }
                     WindowEvent::KeyboardInput { event, .. } => {
-                        app.handle_key_input(event);
+                        app.handle_key_input(event, app.modifiers);
+                    }
+                    WindowEvent::ModifiersChanged(modifiers) => {
+                        app.modifiers = modifiers;
                     }
                     WindowEvent::RedrawRequested => {
                         app.render_frame();

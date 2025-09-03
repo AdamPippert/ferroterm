@@ -1,0 +1,114 @@
+# Ferroterm Configuration Sample
+# This is a sample configuration file that contains all available features
+# and settings that can be configured in Ferroterm.
+# Copy this file to your config directory and rename it to ferroterm.toml
+
+[ui]
+# Font configuration
+font_size = 14                    # Font size in points (6-72)
+font_family = "SF Mono"           # Font family name (must be installed on system)
+theme = "system"                  # Theme: "system", "light", "dark"
+cursor_style = "block"            # Cursor style: "block", "beam", "underline"
+line_height = 1.2                 # Line height multiplier (0.5-3.0)
+padding = 4                       # Window padding in pixels
+window_width = 90                 # Terminal width in columns
+window_height = 25                # Terminal height in rows
+
+[keymap]
+# Command prefix for AI agent
+prefix = "p"                      # Single character prefix for AI commands
+escape_sequence = "\\p"           # Escape sequence to type literal prefix
+
+# Key bindings - customize your shortcuts
+[keymap.bindings]
+"ctrl+c" = "interrupt"            # Send SIGINT
+"ctrl+d" = "eof"                  # Send EOF
+"ctrl+l" = "clear"                # Clear screen
+# Add more custom bindings here:
+# "ctrl+shift+n" = "new_tab"
+# "ctrl+shift+t" = "new_window"
+# "alt+left" = "word_back"
+# "alt+right" = "word_forward"
+
+[agent]
+# AI agent configuration
+default_model = "mistral-7b-instruct"  # Default model to use for AI queries
+context_lines = 100                    # Number of terminal lines to include as context
+timeout_ms = 30000                     # Request timeout in milliseconds
+max_tokens = 2048                      # Maximum tokens in AI response
+temperature = 0.7                      # AI creativity level (0.0-2.0)
+
+[models]
+# Model storage and configuration
+cache_dir = "~/.models"               # Directory where models are stored
+
+# Available models - you can configure multiple models
+[[models.models]]
+name = "mistral-7b-instruct"          # Model identifier
+path = "~/.models/mistral-7b-instruct.gguf"  # Local model file path
+quantization = "q4_0"                 # Quantization level: q4_0, q4_1, q5_0, q5_1, q8_0, f16, f32
+context_window = 4096                 # Context window size in tokens
+
+# Example: Additional local model
+# [[models.models]]
+# name = "llama2-7b-chat"
+# path = "~/.models/llama2-7b-chat.gguf"
+# quantization = "q4_0"
+# context_window = 4096
+
+# Example: Remote API model
+# [[models.models]]
+# name = "gpt-4"
+# api_endpoint = "https://api.openai.com/v1/chat/completions"
+# api_key = "${OPENAI_API_KEY}"        # Can reference environment variables
+# context_window = 8192
+
+# Example: Anthropic Claude
+# [[models.models]]
+# name = "claude-3-sonnet"
+# api_endpoint = "https://api.anthropic.com/v1/messages"
+# api_key = "${ANTHROPIC_API_KEY}"
+# context_window = 200000
+
+[telemetry]
+# Telemetry configuration - helps improve Ferroterm
+enabled = false                       # Enable telemetry (opt-in only)
+endpoint = "https://telemetry.ferroterm.dev"  # Telemetry endpoint
+batch_size = 100                      # Number of events to batch
+flush_interval_ms = 60000             # How often to send telemetry (milliseconds)
+
+# Configuration includes - load additional config files
+includes = [
+    # "~/.config/ferroterm/work.toml",    # Work-specific settings
+    # "~/.config/ferroterm/themes.toml",  # Custom themes
+    # "~/.config/ferroterm/models.toml",  # Additional model configurations
+]
+
+# Advanced settings (optional sections)
+
+# [security]
+# # Security settings (future feature)
+# encrypt_config = false              # Encrypt sensitive configuration
+# model_sandboxing = true             # Sandbox AI model execution
+# api_key_storage = "keychain"        # How to store API keys: "plaintext", "keychain", "encrypted"
+
+# [performance]
+# # Performance tuning (future feature)
+# gpu_memory_limit = "2GB"            # GPU memory limit for models
+# cpu_threads = 0                     # CPU threads for model inference (0 = auto)
+# render_fps = 144                    # Target rendering framerate
+# scroll_buffer_size = 10000          # Scrollback buffer size in lines
+
+# [multiplexer]
+# # Terminal multiplexer features (future feature)
+# enable_tabs = true                  # Enable tab support
+# enable_splits = true                # Enable window splitting
+# tab_bar_position = "top"            # Tab bar position: "top", "bottom"
+# default_shell = "${SHELL}"          # Default shell to launch
+
+# [plugins]
+# # Plugin system configuration (future feature)
+# enabled = false                     # Enable plugin system
+# plugin_dir = "~/.config/ferroterm/plugins"  # Plugin directory
+# sandbox_plugins = true              # Run plugins in sandbox
+# allowed_permissions = ["filesystem", "network"]  # Plugin permissions

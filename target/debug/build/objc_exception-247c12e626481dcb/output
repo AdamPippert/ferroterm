@@ -1,4 +1,4 @@
-OUT_DIR = Some(/Users/apippert/Development/CDR/pachyterm/target/debug/build/objc_exception-247c12e626481dcb/out)
+OUT_DIR = Some(/Users/apippert/Development/ferroterm/target/debug/build/objc_exception-247c12e626481dcb/out)
 OPT_LEVEL = Some(0)
 TARGET = Some(aarch64-apple-darwin)
 HOST = Some(aarch64-apple-darwin)
@@ -43,4 +43,4 @@ ARFLAGS_aarch64_apple_darwin = None
 cargo:rerun-if-env-changed=ARFLAGS_aarch64-apple-darwin
 ARFLAGS_aarch64-apple-darwin = None
 cargo:rustc-link-lib=static=exception
-cargo:rustc-link-search=native=/Users/apippert/Development/CDR/pachyterm/target/debug/build/objc_exception-247c12e626481dcb/out
+cargo:rustc-link-search=native=/Users/apippert/Development/ferroterm/target/debug/build/objc_exception-247c12e626481dcb/out

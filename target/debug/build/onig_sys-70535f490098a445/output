@@ -1,7 +1,7 @@
 cargo:rerun-if-env-changed=RUSTONIG_DYNAMIC_LIBONIG
 cargo:rerun-if-env-changed=RUSTONIG_STATIC_LIBONIG
 cargo:rerun-if-env-changed=RUSTONIG_SYSTEM_LIBONIG
-OUT_DIR = Some(/Users/apippert/Development/CDR/pachyterm/target/debug/build/onig_sys-70535f490098a445/out)
+OUT_DIR = Some(/Users/apippert/Development/ferroterm/target/debug/build/onig_sys-70535f490098a445/out)
 OPT_LEVEL = Some(0)
 TARGET = Some(aarch64-apple-darwin)
 HOST = Some(aarch64-apple-darwin)
@@ -46,4 +46,4 @@ ARFLAGS_aarch64_apple_darwin = None
 cargo:rerun-if-env-changed=ARFLAGS_aarch64-apple-darwin
 ARFLAGS_aarch64-apple-darwin = None
 cargo:rustc-link-lib=static=onig
-cargo:rustc-link-search=native=/Users/apippert/Development/CDR/pachyterm/target/debug/build/onig_sys-70535f490098a445/out
+cargo:rustc-link-search=native=/Users/apippert/Development/ferroterm/target/debug/build/onig_sys-70535f490098a445/out

@@ -479,7 +479,6 @@ impl CommandParser {
 struct AgentCommandParser {
     input: String,
     pos: usize,
-    state: ParseState,
 }
 
 impl AgentCommandParser {
@@ -487,7 +486,6 @@ impl AgentCommandParser {
         Self {
             input: input.to_string(),
             pos: 0,
-            state: ParseState::LineStart,
         }
     }
 

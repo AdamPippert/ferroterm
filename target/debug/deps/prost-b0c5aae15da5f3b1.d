@@ -1,0 +1,11 @@
+/Users/apippert/Development/ferroterm/target/debug/deps/prost-b0c5aae15da5f3b1.d: /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/lib.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/error.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/message.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/name.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/types.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/encoding.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/../README.md
+
+/Users/apippert/Development/ferroterm/target/debug/deps/libprost-b0c5aae15da5f3b1.rmeta: /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/lib.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/error.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/message.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/name.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/types.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/encoding.rs /Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/../README.md
+
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/lib.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/error.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/message.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/name.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/types.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/encoding.rs:
+/Users/apippert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prost-0.12.6/src/../README.md:

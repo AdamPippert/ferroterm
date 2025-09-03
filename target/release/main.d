@@ -1,0 +1,1 @@
+/Users/apippert/Development/ferroterm/target/release/main: /Users/apippert/Development/ferroterm/src/bin/main.rs /Users/apippert/Development/ferroterm/src/command_parser.rs /Users/apippert/Development/ferroterm/src/config.rs /Users/apippert/Development/ferroterm/src/input.rs /Users/apippert/Development/ferroterm/src/lib.rs /Users/apippert/Development/ferroterm/src/tty.rs

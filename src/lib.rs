@@ -1,6 +1,9 @@
 pub mod command_parser;
 pub mod config;
 pub mod input;
+pub mod simple_renderer;
+pub mod terminal;
+pub mod terminal_parser;
 pub mod tty;
 
 // TODO: Enable these modules after fixing compilation issues

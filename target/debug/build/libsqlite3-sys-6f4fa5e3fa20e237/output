@@ -3,7 +3,7 @@ cargo:rerun-if-changed=sqlite3/wasm32-wasi-vfs.c
 cargo:rerun-if-env-changed=SQLITE_MAX_VARIABLE_NUMBER
 cargo:rerun-if-env-changed=SQLITE_MAX_EXPR_DEPTH
 cargo:rerun-if-env-changed=LIBSQLITE3_FLAGS
-OUT_DIR = Some(/Users/apippert/Development/CDR/pachyterm/target/debug/build/libsqlite3-sys-6f4fa5e3fa20e237/out)
+OUT_DIR = Some(/Users/apippert/Development/ferroterm/target/debug/build/libsqlite3-sys-6f4fa5e3fa20e237/out)
 OPT_LEVEL = Some(0)
 TARGET = Some(aarch64-apple-darwin)
 HOST = Some(aarch64-apple-darwin)
@@ -48,5 +48,5 @@ ARFLAGS_aarch64_apple_darwin = None
 cargo:rerun-if-env-changed=ARFLAGS_aarch64-apple-darwin
 ARFLAGS_aarch64-apple-darwin = None
 cargo:rustc-link-lib=static=sqlite3
-cargo:rustc-link-search=native=/Users/apippert/Development/CDR/pachyterm/target/debug/build/libsqlite3-sys-6f4fa5e3fa20e237/out
-cargo:lib_dir=/Users/apippert/Development/CDR/pachyterm/target/debug/build/libsqlite3-sys-6f4fa5e3fa20e237/out
+cargo:rustc-link-search=native=/Users/apippert/Development/ferroterm/target/debug/build/libsqlite3-sys-6f4fa5e3fa20e237/out
+cargo:lib_dir=/Users/apippert/Development/ferroterm/target/debug/build/libsqlite3-sys-6f4fa5e3fa20e237/out
